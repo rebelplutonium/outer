@@ -170,6 +170,7 @@ done &&
         --env DOCKER_SEMVER \
         --env BROWSER_SEMVER \
         --env MIDDLE_SEMVER \
+        --env INNER_SEMVER \
         --label expiry=$(date --date "now + 1 month" +%s) \
         rebelplutonium/middle:${MIDDLE_SEMVER} \
             "${@}" &&
