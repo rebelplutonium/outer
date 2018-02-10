@@ -153,7 +153,6 @@ done &&
         create \
         --cidfile middle \
         --interactive \
-        --tty \
         --env DISPLAY \
         --env DOCKER_HOST=tcp://docker:2376 \
         --env CLOUD9_PORT \
