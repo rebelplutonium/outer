@@ -55,6 +55,10 @@ do
             export BROWSER_SEMVER="${2}" &&
                 shift 2
         ;;
+        --middle-semver)
+            export MIDDLE_SEMVER="${2}" &&
+                shift 2
+        ;;
         --inner-semver)
             export INNER_SEMVER="${2}" &&
                 shift 2
