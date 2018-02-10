@@ -137,6 +137,7 @@ done &&
             sudo --preserve-env docker rm -fv $(cat docker) $(cat middle) &&
             sudo --preserve-env docker network rm $(cat network)
     } &&
+    trap cleanup EXIT &&
     sudo \
         --preserve-env \
         docker \
