@@ -142,6 +142,10 @@ done &&
             sudo --preserve-env docker network rm $(cat network)
     } &&
     trap cleanup EXIT &&
+    sudo --preserve-env docker save --output docker.tar rebelplutonium/docker:${DOCKER_SEMVER} &&
+    sudo --preserve-env docker save --output browser.tar rebelplutonium/browser:${BROWSER_SEMVER} &&
+    sudo --preserve-env docker save --output middle.tar rebelplutonium/middle:${MIDDLE_SEMVER} &&
+    sudo --preserve-env docker save --output inner.tar rebelplutonium/inner:${INNER_SEMVER} &&
     sudo \
         --preserve-env \
         docker \
@@ -152,6 +156,14 @@ done &&
         --label expiry=$(date --date "now + 1 month" +%s) \
         docker:${DOCKER_SEMVER}-ce-dind \
             --host tcp://0.0.0.0:2376 &&
+    sudo --preserve-env docker cp docker.tar $(cat docker):docker.tar &&
+    sudo --preserve-env docker cp browser.tar $(cat docker):docker.tar &&
+    sudo --preserve-env docker cp middle.tar $(cat docker):docker.tar &&
+    sudo --preserve-env docker cp inner.tar $(cat docker):docker.tar &&
+    sudo --preserve-env docker exec --interactive $(cat docker) docker load--input docker.tar &&
+    sudo --preserve-env browser exec --interactive $(cat docker) docker load--input browser.tar &&
+    sudo --preserve-env middle exec --interactive $(cat docker) docker load--input middle.tar &&
+    sudo --preserve-env inner exec --interactive $(cat docker) docker load--input inner.tar &&
     sudo \
         --preserve-env \
         docker \
