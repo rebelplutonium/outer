@@ -153,7 +153,7 @@ done &&
         --cidfile docker \
         --privileged \
         --volume /:/srv/host:ro \
-        --label expiry=$(date --date "now + 1 month" +%s) \
+        --label expiry=$(($(date +%s)+60*60*24*7)) \
         docker:${DOCKER_SEMVER}-ce-dind \
             --host tcp://0.0.0.0:2376 &&
     sudo --preserve-env docker cp docker.tar $(cat docker):docker.tar &&
@@ -187,7 +187,7 @@ done &&
         --env BROWSER_SEMVER \
         --env MIDDLE_SEMVER \
         --env INNER_SEMVER \
-        --label expiry=$(date --date "now + 1 month" +%s) \
+        --label expiry=$(($(date +%s)+60*60*24*7)) \
         rebelplutonium/middle:${MIDDLE_SEMVER} \
             "${@}" &&
     sudo --preserve-env docker network create $(uuidgen) > network &&
