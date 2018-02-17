@@ -138,11 +138,10 @@ done &&
     fi &&
     cleanup(){
         sudo --preserve-env docker stop $(cat docker) $(cat middle) &&
-            sudo --preserve-env docker rm -fv $(cat docker) $(cat middle) &&
-            sudo --preserve-env docker network rm $(cat network)
+            sudo --preserve-env docker rm -fv $(cat docker) $(cat middle)
     } &&
     trap cleanup EXIT &&
-    sudo --preserve-env docker save --output docker.tar rebelplutonium/docker:${DOCKER_SEMVER} &&
+    sudo --preserve-env docker save --output docker.tar docker:${DOCKER_SEMVER} &&
     sudo --preserve-env docker save --output browser.tar rebelplutonium/browser:${BROWSER_SEMVER} &&
     sudo --preserve-env docker save --output middle.tar rebelplutonium/middle:${MIDDLE_SEMVER} &&
     sudo --preserve-env docker save --output inner.tar rebelplutonium/inner:${INNER_SEMVER} &&
@@ -156,6 +155,13 @@ done &&
         --label expiry=$(($(date +%s)+60*60*24*7)) \
         docker:${DOCKER_SEMVER}-ce-dind \
             --host tcp://0.0.0.0:2376 &&
+    export DOCKER_HOST=$(sudo \
+        --preserve-env \
+        docker \
+        inspect \
+        --format "DOCKER_HOST=tcp://{{ .NetworkSettings.Networks.bridge.IPAddress }}:2376" \
+        $(cat docker)
+    ) &&
     sudo --preserve-env docker cp docker.tar $(cat docker):docker.tar &&
     sudo --preserve-env docker cp browser.tar $(cat docker):docker.tar &&
     sudo --preserve-env docker cp middle.tar $(cat docker):docker.tar &&
@@ -171,7 +177,7 @@ done &&
         --cidfile middle \
         --interactive \
         --env DISPLAY \
-        --env DOCKER_HOST=tcp://docker:2376 \
+        --env DOCKER_HOST \
         --env CLOUD9_PORT \
         --env PROJECT_NAME \
         --env USER_NAME \
@@ -190,15 +196,5 @@ done &&
         --label expiry=$(($(date +%s)+60*60*24*7)) \
         rebelplutonium/middle:${MIDDLE_SEMVER} \
             "${@}" &&
-    sudo --preserve-env docker network create $(uuidgen) > network &&
-    sudo \
-        --preserve-env \
-        docker \
-        network \
-        connect \
-        --alias docker \
-        $(cat network) \
-        $(cat docker) &&
-    sudo --preserve-env docker network connect $(cat network) $(cat middle) &&
     sudo --preserve-env docker start $(cat docker) &&
     sudo --preserve-env docker start --interactive $(cat middle)
