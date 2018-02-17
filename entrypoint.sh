@@ -142,7 +142,7 @@ done &&
             sudo --preserve-env docker network rm $(cat network)
     } &&
     trap cleanup EXIT &&
-    sudo --preserve-env docker save --output docker.tar rebelplutonium/docker:${DOCKER_SEMVER} &&
+    sudo --preserve-env docker save --output docker.tar docker:${DOCKER_SEMVER} &&
     sudo --preserve-env docker save --output browser.tar rebelplutonium/browser:${BROWSER_SEMVER} &&
     sudo --preserve-env docker save --output middle.tar rebelplutonium/middle:${MIDDLE_SEMVER} &&
     sudo --preserve-env docker save --output inner.tar rebelplutonium/inner:${INNER_SEMVER} &&
