@@ -148,6 +148,10 @@ done &&
             done
     } &&
     trap cleanup EXIT &&
+    sudo --preserve-env docker pull docker:${DOCKER_SEMVER} &&
+    sudo --preserve-env docker pull rebelplutonium/browser:${BROWSER_SEMVER} &&
+    sudo --preserve-env docker pull rebelplutonium/middle:${MIDDLE_SEMVER} &&
+    sudo --preserve-env docker pull rebelplutonium/inner:${INNER_SEMVER} &&
     sudo --preserve-env docker save --output docker.tar docker:${DOCKER_SEMVER} &&
     sudo --preserve-env docker save --output browser.tar rebelplutonium/browser:${BROWSER_SEMVER} &&
     sudo --preserve-env docker save --output middle.tar rebelplutonium/middle:${MIDDLE_SEMVER} &&
@@ -168,9 +172,9 @@ done &&
     sudo --preserve-env docker cp middle.tar $(cat docker):/middle.tar &&
     sudo --preserve-env docker cp inner.tar $(cat docker):/inner.tar &&
     sudo --preserve-env docker exec --interactive $(cat docker) docker load --input /docker.tar &&
-    sudo --preserve-env browser exec --interactive $(cat docker) docker load --input /browser.tar &&
-    sudo --preserve-env middle exec --interactive $(cat docker) docker load --input /middle.tar &&
-    sudo --preserve-env inner exec --interactive $(cat docker) docker load --input /inner.tar &&
+    sudo --preserve-env docker exec --interactive $(cat docker) docker load --input /browser.tar &&
+    sudo --preserve-env docker exec --interactive $(cat docker) docker load --input /middle.tar &&
+    sudo --preserve-env docker exec --interactive $(cat docker) docker load --input /inner.tar &&
     sudo \
         --preserve-env \
         docker \
@@ -194,7 +198,7 @@ done &&
         --env BROWSER_SEMVER \
         --env MIDDLE_SEMVER \
         --env INNER_SEMVER \
-        --env DOCKER_HOST=$(sudo --preserve-env docker inspect --format "DOCKER_HOST=tcp://{{ .NetworkSettings.Networks.bridge.IPAddress }}:2376" $(cat docker)) \
+        --env DOCKER_HOST=$(sudo --preserve-env docker inspect --format "tcp://{{ .NetworkSettings.Networks.bridge.IPAddress }}:2376" $(cat docker)) \
         --label expiry=$(($(date +%s)+60*60*24*7)) \
         rebelplutonium/middle:${MIDDLE_SEMVER} \
             "${@}" &&
