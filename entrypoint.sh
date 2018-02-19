@@ -167,10 +167,10 @@ done &&
     sudo --preserve-env docker cp browser.tar $(cat docker):/browser.tar &&
     sudo --preserve-env docker cp middle.tar $(cat docker):/middle.tar &&
     sudo --preserve-env docker cp inner.tar $(cat docker):/inner.tar &&
-    sudo --preserve-env docker exec --interactive $(cat docker) docker load--input /docker.tar &&
-    sudo --preserve-env browser exec --interactive $(cat docker) docker load--input /browser.tar &&
-    sudo --preserve-env middle exec --interactive $(cat docker) docker load--input /middle.tar &&
-    sudo --preserve-env inner exec --interactive $(cat docker) docker load--input /inner.tar &&
+    sudo --preserve-env docker exec --interactive $(cat docker) docker load --input /docker.tar &&
+    sudo --preserve-env browser exec --interactive $(cat docker) docker load --input /browser.tar &&
+    sudo --preserve-env middle exec --interactive $(cat docker) docker load --input /middle.tar &&
+    sudo --preserve-env inner exec --interactive $(cat docker) docker load --input /inner.tar &&
     sudo \
         --preserve-env \
         docker \
