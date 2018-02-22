@@ -162,7 +162,7 @@ done &&
     sudo \
         --preserve-env \
         docker \
-        create \
+        run \
         --cidfile docker \
         --privileged \
         --volume /:/srv/host:ro \
