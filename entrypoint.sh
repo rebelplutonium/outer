@@ -150,14 +150,14 @@ done &&
     trap cleanup EXIT &&
     VOLUME=$(sudo --preserve-env docker volume ls --quiet | while read VOLUME
     do
-        if [ $(sudo --preserve-env docker volume --format "{{.Volumes.moniker}}") != "<no value>" ${VOLUME} ]
+        if [ $(sudo --preserve-env docker volume --format "{{.Volumes.moniker}}" ${VOLUME}) == "d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a" ]
         then
             echo ${VOLUME}
         fi
     done | head -n 1) &&
     if [ -z "${VOLUME}" ]
     then
-        VOLUME=$(sudo docker volume create --label moniker=d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a --label expiry=$(($(date %s)+60*60*24*7)))
+        VOLUME=$(sudo docker volume create --label moniker=d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a --label expiry=$(($(date +%s)+60*60*24*7)))
     fi &&
     sudo \
         --preserve-env \
