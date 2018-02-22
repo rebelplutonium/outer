@@ -162,7 +162,7 @@ done &&
     sudo \
         --preserve-env \
         docker \
-        run \
+        create \
         --cidfile docker \
         --privileged \
         --volume /:/srv/host:ro \
@@ -170,6 +170,7 @@ done &&
         --label expiry=$(($(date +%s)+60*60*24*7)) \
         docker:${DOCKER_SEMVER}-ce-dind \
             --host tcp://0.0.0.0:2376 &&
+    sudo --preserven-env docker start $(cat docker) &&
     sudo --preserve-env docker inspect --format "export DOCKER_HOST=tcp://{{ .NetworkSettings.Networks.bridge.IPAddress }}:2376" $(cat docker) &&
     sudo \
         --preserve-env \
