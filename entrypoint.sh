@@ -151,13 +151,16 @@ done &&
     VOLUME=$(sudo --preserve-env docker volume ls --quiet | while read VOLUME
     do
         if [ "$(sudo --preserve-env docker volume inspect --format \"{{.Labels.moniker}}\" ${VOLUME})" == "d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a" ]
-        then
+        then    
             echo ${VOLUME}
         fi
     done | head -n 1) &&
     if [ -z "${VOLUME}" ]
     then
-        VOLUME=$(sudo docker volume create --label moniker=d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a --label expiry=$(($(date +%s)+60*60*24*7)))
+        echo CREATING A NEW DOCKER VOLUME &&
+            VOLUME=$(sudo docker volume create --label moniker=d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a --label expiry=$(($(date +%s)+60*60*24*7)))
+    else
+        echo USING A CACHED DOCKER VOLUME
     fi &&
     sudo \
         --preserve-env \
@@ -166,7 +169,7 @@ done &&
         --cidfile docker \
         --privileged \
         --volume /:/srv/host:ro \
-        --volume ${VOLUME}:/var/lib/docker/images \
+        --volume ${VOLUME}:/var/lib/docker \
         --label expiry=$(($(date +%s)+60*60*24*7)) \
         docker:${DOCKER_SEMVER}-ce-dind \
             --host tcp://0.0.0.0:2376 &&
