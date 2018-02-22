@@ -148,14 +148,11 @@ done &&
             done
     } &&
     trap cleanup EXIT &&
-    sudo --preserve-env docker pull docker:${DOCKER_SEMVER} &&
-    sudo --preserve-env docker pull rebelplutonium/browser:${BROWSER_SEMVER} &&
-    sudo --preserve-env docker pull rebelplutonium/middle:${MIDDLE_SEMVER} &&
-    sudo --preserve-env docker pull rebelplutonium/inner:${INNER_SEMVER} &&
-    sudo --preserve-env docker save --output docker.tar docker:${DOCKER_SEMVER} &&
-    sudo --preserve-env docker save --output browser.tar rebelplutonium/browser:${BROWSER_SEMVER} &&
-    sudo --preserve-env docker save --output middle.tar rebelplutonium/middle:${MIDDLE_SEMVER} &&
-    sudo --preserve-env docker save --output inner.tar rebelplutonium/inner:${INNER_SEMVER} &&
+    VOLUME=$(sudo --preserve-env docker volume ls --filter label=moniker=d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a --filter label=expiry --quiet) &&
+    if [ -z "${VOLUME}" ]
+    then
+        VOLUME=$(sudo docker volume create --label moniker=d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a --label expiry=$(($(date %s)+60*60*24*7)))
+    fi &&
     sudo \
         --preserve-env \
         docker \
@@ -163,18 +160,10 @@ done &&
         --cidfile docker \
         --privileged \
         --volume /:/srv/host:ro \
+        --volume ${VOLUME}:/var/lib/docker/images \
         --label expiry=$(($(date +%s)+60*60*24*7)) \
         docker:${DOCKER_SEMVER}-ce-dind \
             --host tcp://0.0.0.0:2376 &&
-    sudo --preserve-env docker start $(cat docker) &&
-    sudo --preserve-env docker cp docker.tar $(cat docker):/docker.tar &&
-    sudo --preserve-env docker cp browser.tar $(cat docker):/browser.tar &&
-    sudo --preserve-env docker cp middle.tar $(cat docker):/middle.tar &&
-    sudo --preserve-env docker cp inner.tar $(cat docker):/inner.tar &&
-    sudo --preserve-env docker exec --interactive $(cat docker) docker load --input /docker.tar &&
-    sudo --preserve-env docker exec --interactive $(cat docker) docker load --input /browser.tar &&
-    sudo --preserve-env docker exec --interactive $(cat docker) docker load --input /middle.tar &&
-    sudo --preserve-env docker exec --interactive $(cat docker) docker load --input /inner.tar &&
     sudo \
         --preserve-env \
         docker \
