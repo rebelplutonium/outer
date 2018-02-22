@@ -1,76 +1,81 @@
 #!/bin/sh
 
-while [ ${#} -gt 0 ]
-do
-    case ${1} in
-        --cloud9-port)
-            export CLOUD9_PORT="${2}" &&
-                shift 2
-        ;;
-        --project-name)
-            export PROJECT_NAME="${2}" &&
-                shift 2
-        ;;
-        --user-name)
-            export USER_NAME="${2}" &&
-                shift 2
-        ;;
-        --user-email)
-            export USER_EMAIL="${2}" &&
-                shift 2
-        ;;
-        --gpg-secret-key)
-            export GPG_SECRET_KEY="${2}" &&
-                shift 2
-        ;;
-        --gpg2-secret-key)
-            export GPG2_SECRET_KEY="${2}" &&
-                shift 2
-        ;;
-        --gpg-owner-trust)
-            export GPG_OWNER_TRUST="${2}" &&
-                shift 2
-        ;;
-        --gpg2-owner-trust)
-            export GPG2_OWNER_TRUST="${2}" &&
-                shift 2
-        ;;
-        --gpg-key-id)
-            export GPG_KEY_ID="${2}" &&
-                shift 2
-        ;;
-        --secrets-organization)
-            export SECRETS_ORGANIZATION="${2}" &&
-                shift 2
-        ;;
-        --secrets-repository)
-            export SECRETS_REPOSITORY="${2}" &&
-                shift 2
-        ;;
-        --docker-semver)
-            export DOCKER_SEMVER="${2}" &&
-                shift 2
-        ;;
-        --browser-semver)
-            export BROWSER_SEMVER="${2}" &&
-                shift 2
-        ;;
-        --middle-semver)
-            export MIDDLE_SEMVER="${2}" &&
-                shift 2
-        ;;
-        --inner-semver)
-            export INNER_SEMVER="${2}" &&
-                shift 2
-        ;;
-        *)
-            echo Unsupported Option &&
-                echo ${0} &&
-                echo ${@} &&
-                exit 64
-        ;;
-    esac
-done &&
+MONIKER=d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a &&
+    while [ ${#} -gt 0 ]
+    do
+        case ${1} in
+            --moniker)
+                MONIKER="${2}" &&
+                    shift 2
+            ;;
+            --cloud9-port)
+                export CLOUD9_PORT="${2}" &&
+                    shift 2
+            ;;
+            --project-name)
+                export PROJECT_NAME="${2}" &&
+                    shift 2
+            ;;
+            --user-name)
+                export USER_NAME="${2}" &&
+                    shift 2
+            ;;
+            --user-email)
+                export USER_EMAIL="${2}" &&
+                    shift 2
+            ;;
+            --gpg-secret-key)
+                export GPG_SECRET_KEY="${2}" &&
+                    shift 2
+            ;;
+            --gpg2-secret-key)
+                export GPG2_SECRET_KEY="${2}" &&
+                    shift 2
+            ;;
+            --gpg-owner-trust)
+                export GPG_OWNER_TRUST="${2}" &&
+                    shift 2
+            ;;
+            --gpg2-owner-trust)
+                export GPG2_OWNER_TRUST="${2}" &&
+                    shift 2
+            ;;
+            --gpg-key-id)
+                export GPG_KEY_ID="${2}" &&
+                    shift 2
+            ;;
+            --secrets-organization)
+                export SECRETS_ORGANIZATION="${2}" &&
+                    shift 2
+            ;;
+            --secrets-repository)
+                export SECRETS_REPOSITORY="${2}" &&
+                    shift 2
+            ;;
+            --docker-semver)
+                export DOCKER_SEMVER="${2}" &&
+                    shift 2
+            ;;
+            --browser-semver)
+                export BROWSER_SEMVER="${2}" &&
+                    shift 2
+            ;;
+            --middle-semver)
+                export MIDDLE_SEMVER="${2}" &&
+                    shift 2
+            ;;
+            --inner-semver)
+                export INNER_SEMVER="${2}" &&
+                    shift 2
+            ;;
+            *)
+                echo Unsupported Option &&
+                    echo ${0} &&
+                    echo ${@} &&
+                    exit 64
+            ;;
+        esac
+    done &&
     if [ -z "${CLOUD9_PORT}" ]
     then
         echo Unspecified CLOUD9_PORT &&
@@ -145,12 +150,19 @@ done &&
                 then
                     sudo --preserve-env docker rm -v ${ID}
                 fi
+            done &&
+            sudo --preserve-env docker volume ls --quiet | while read ID
+            do
+                if [ "$(sudo --preserve-env docker volume inspect --format \"{{.Labels.expiry}}\" ${VOLUME})" != "\"<no value>\"" ] && [ $(date --date "$(sudo --preserve-env docker volume inspect --format \"{{.Labels.expiry}}\" ${VOLUME})") -lt $(date +%s) ]
+                then
+                    sudo --preserve-env docker volume rm ${VOLUME}
+                fi
             done
     } &&
     trap cleanup EXIT &&
     VOLUME=$(sudo --preserve-env docker volume ls --quiet | while read VOLUME
     do
-        if [ "$(sudo --preserve-env docker volume inspect --format \"{{.Labels.moniker}}\" ${VOLUME})" == "\"d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a\"" ]
+        if [ "$(sudo --preserve-env docker volume inspect --format \"{{.Labels.moniker}}\" ${VOLUME})" == "\"${MONIKER}\"" ]
         then    
             echo ${VOLUME}
         fi
@@ -158,7 +170,7 @@ done &&
     if [ -z "${VOLUME}" ]
     then
         echo CREATING A NEW DOCKER VOLUME &&
-            VOLUME=$(sudo docker volume create --label moniker=d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a --label expiry=$(($(date +%s)+60*60*24*7)))
+            VOLUME=$(sudo docker volume create --label moniker=${MONIKER} --label expiry=$(($(date +%s)+60*60*24*7)))
     else
         echo USING A CACHED DOCKER VOLUME
     fi &&
