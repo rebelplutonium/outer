@@ -150,7 +150,7 @@ done &&
     trap cleanup EXIT &&
     VOLUME=$(sudo --preserve-env docker volume ls --quiet | while read VOLUME
     do
-        if [ $(sudo --preserve-env docker volume inspect --format "{{.Volumes.moniker}}" ${VOLUME}) == "d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a" ]
+        if [ $(sudo --preserve-env docker volume inspect --format "{{.Labels.moniker}}" ${VOLUME}) == "d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a" ]
         then
             echo ${VOLUME}
         fi
