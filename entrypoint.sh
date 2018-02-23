@@ -174,7 +174,9 @@ done &&
         docker:${DOCKER_SEMVER}-ce-dind \
             --host tcp://0.0.0.0:2376 &&
     sudo --preserve-env docker start $(cat docker) &&
-    sudo --preserve-env docker inspect --format "export DOCKER_HOST=tcp://{{ .NetworkSettings.Networks.bridge.IPAddress }}:2376" $(cat docker) &&
+    sudo --preserve-env docker exec --interactive $(cat docker) adduser -D user &&
+    sudo --preserve-env docker exec --interactive $(cat docker) mkdir /home/user/workspace &&
+    sudo --preserve-env docker exec --interactive $(cat docker) chown user:user /home/user/workspace &&
     sudo \
         --preserve-env \
         docker \
