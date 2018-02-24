@@ -181,7 +181,7 @@ MONIKER=d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a &&
         --cidfile docker \
         --privileged \
         --volume /:/srv/host:ro \
-        --volume ${VOLUME}:/var/lib/docker \
+        --volume ${VOLUME}:/var/lib/docker/image \
         --label expiry=$(($(date +%s)+60*60*24*7)) \
         docker:${DOCKER_SEMVER}-ce-dind \
             --host tcp://0.0.0.0:2376 &&
