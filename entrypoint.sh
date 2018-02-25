@@ -146,6 +146,7 @@ MONIKER=d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a &&
             sudo --preserve-env docker rm -fv $(cat docker) $(cat middle)
     } &&
     trap cleanup EXIT &&
+    echo AAA 00100 &&
     IMAGE_VOLUME=$(sudo --preserve-env docker volume ls --quiet | while read VOLUME
     do
             if [ "$(sudo --preserve-env docker volume inspect --format \"{{ .Labels.moniker }}\" ${VOLUME}-image)" == "\"${MONIKER}\"" ]
@@ -153,10 +154,13 @@ MONIKER=d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a &&
                 echo ${VOLUME}
             fi
     done | head -n 1) &&
+    echo AAA 00200 &&
     if [ -z "${IMAGE_VOLUME}" ]
     then
         IMAGE_VOLUME=$(sudo docker volume create --label moniker=${MONIKER}-image --label expiry=$(($(date +%s)+60*60*24*7)))
     fi &&
+    echo AAA 00300 &&
+    echo IMAGE_VOLUME=${IMAGE_VOLUME} &&
     sudo \
         --preserve-env \
         docker \
