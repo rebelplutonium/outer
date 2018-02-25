@@ -169,7 +169,7 @@ MONIKER=d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a &&
     done | head -n 1) &&
     if [ -z "${REGISTRY_VOLUME}" ]
     then
-        VOLUME=$(sudo docker volume create --label moniker=${MONIKER} --label expiry=$(($(date +%s)+60*60*24*7)))
+        REGISTRY_VOLUME=$(sudo docker volume create --label moniker=${MONIKER} --label expiry=$(($(date +%s)+60*60*24*7)))
     fi &&
     sudo --preserve-env docker create --cidfile registry --volume ${REGISTRY_VOLUME}:/var/lib/registry registry:2.6.2 &&
     sudo \
