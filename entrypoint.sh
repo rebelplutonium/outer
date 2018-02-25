@@ -166,12 +166,10 @@ MONIKER=d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a &&
     trap cleanup EXIT &&
     IMAGE_VOLUME=$(sudo --preserve-env docker volume ls --quiet | while read VOLUME
     do
-        echo LOG A 4 &&
             if [ "$(sudo --preserve-env docker volume inspect --format \"{{.Labels.moniker}}\" ${VOLUME})" == "\"${MONIKER}\"" ]
             then    
                 echo ${VOLUME}
-            fi &&
-            echo LOG B 4
+            fi
     done | head -n 1) &&
     if [ -z "${IMAGE_VOLUME}" ]
     then
