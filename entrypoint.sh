@@ -146,26 +146,32 @@ MONIKER=d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a &&
             sudo --preserve-env docker rm -fv $(cat registry) $(cat docker) $(cat middle) &&
             sudo --preserve-env docker ps --quiet --all --filter label=expiry | while read ID
             do
-                if [ $(sudo --preserve-env docker inspect --format "{{ .Config.Labels.expiry }}" ${ID}) -lt $(date +%s) ]
-                then
-                    sudo --preserve-env docker rm -v ${ID}
-                fi
+                echo LOG A 1 &&
+                    if [ $(sudo --preserve-env docker inspect --format "{{ .Config.Labels.expiry }}" ${ID}) -lt $(date +%s) ]
+                    then
+                        sudo --preserve-env docker rm -v ${ID}
+                    fi &&
+                    echo LOG B1
             done &&
             sudo --preserve-env docker volume ls --quiet | while read VOLUME
             do
-                if [ "$(sudo --preserve-env docker volume inspect --format \"{{.Labels.expiry}}\" ${VOLUME})" != "\"<no value>\"" ] && [ $(sudo --preserve-env docker volume inspect --format "{{.Labels.expiry}}" ${VOLUME}) -lt $(date +%s) ]
-                then
-                    sudo --preserve-env docker volume rm ${VOLUME}
-                fi
+                echo LOG A 3 &&
+                    if [ "$(sudo --preserve-env docker volume inspect --format \"{{.Labels.expiry}}\" ${VOLUME})" != "\"<no value>\"" ] && [ $(sudo --preserve-env docker volume inspect --format "{{.Labels.expiry}}" ${VOLUME}) -lt $(date +%s) ]
+                    then
+                        sudo --preserve-env docker volume rm ${VOLUME}
+                    fi &&
+                    echo LOG B 3
             done
     } &&
     trap cleanup EXIT &&
     REGISTRY_VOLUME=$(sudo --preserve-env docker volume ls --quiet | while read VOLUME
     do
-        if [ "$(sudo --preserve-env docker volume inspect --format \"{{.Labels.moniker}}\" ${VOLUME})" == "\"${MONIKER}\"" ]
-        then    
-            echo ${VOLUME}
-        fi
+        echo LOG A 4 &&
+            if [ "$(sudo --preserve-env docker volume inspect --format \"{{.Labels.moniker}}\" ${VOLUME})" == "\"${MONIKER}\"" ]
+            then    
+                echo ${VOLUME}
+            fi &&
+            echo LOG B 4
     done | head -n 1) &&
     if [ -z "${REGISTRY_VOLUME}" ]
     then
@@ -188,7 +194,9 @@ MONIKER=d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a &&
     sudo --preserve-env docker exec --interactive $(cat docker) adduser -D user &&
     sudo --preserve-env docker exec --interactive $(cat docker) mkdir /home/user/workspace &&
     sudo --preserve-env docker exec --interactive $(cat docker) chown user:user /home/user/workspace &&
+    echo LOG A 5 &&
     sudo --preserve-env docker inspect --format "{{.NetworkSettings.Networks.bridge.IPAddress}}" | sudo --preserve-env docker exec --interactive $(cat docker) tee -a /etc/hosts &&
+    echo LOG B 5 &&
     (cat > ${TFILE} <<EOF
 {
     "insecure-registries": ["registry:5000"]
@@ -197,6 +205,7 @@ EOF
     ) | sudo --preserve-env docker exec --interactive $(cat docker) tee /etc/docker/daemon.json &&
     sudo --preserve-env docker restart $(cat docker) $(cat registry) &&
     sleep 5s &&
+    echo LOG A 6 &&
     sudo \
         --preserve-env \
         docker \
@@ -224,4 +233,5 @@ EOF
         --label expiry=$(($(date +%s)+60*60*24*7)) \
         rebelplutonium/middle:${MIDDLE_SEMVER} \
             "${@}" &&
+    echo LOG B 6 &&
     sudo --preserve-env docker start --interactive $(cat middle)
