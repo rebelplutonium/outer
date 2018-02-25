@@ -22,6 +22,7 @@ do
                     xhost -
                 } &&
                 trap cleanup EXIT &&
+                echo LOADING SCRIPT ... &&
                 sudo \
                     --preserve-env \
                     /usr/bin/docker \
