@@ -151,9 +151,9 @@ MONIKER=d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a &&
                     sudo --preserve-env docker rm -v ${ID}
                 fi
             done &&
-            sudo --preserve-env docker volume ls --quiet | while read ID
+            sudo --preserve-env docker volume ls --quiet | while read VOLUME
             do
-                if [ "$(sudo --preserve-env docker volume inspect --format \"{{.Labels.expiry}}\" ${VOLUME})" != "\"<no value>\"" ] && [ $(date --date "$(sudo --preserve-env docker volume inspect --format \"{{.Labels.expiry}}\" ${VOLUME})") -lt $(date +%s) ]
+                if [ "$(sudo --preserve-env docker volume inspect --format \"{{.Labels.expiry}}\" ${VOLUME})" != "\"<no value>\"" ] && [ $(sudo --preserve-env docker volume inspect --format "{{.Labels.expiry}}" ${VOLUME}) -lt $(date +%s) ]
                 then
                     sudo --preserve-env docker volume rm ${VOLUME}
                 fi
