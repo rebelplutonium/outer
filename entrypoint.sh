@@ -164,31 +164,19 @@ MONIKER=d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a &&
             done
     } &&
     trap cleanup EXIT &&
-<<<<<<< HEAD
-    REGISTRY_VOLUME=$(sudo --preserve-env docker volume ls --quiet | while read VOLUME
-=======
     IMAGE_VOLUME=$(sudo --preserve-env docker volume ls --quiet | while read VOLUME
->>>>>>> only cache images
     do
-        echo LOG A 4 &&
             if [ "$(sudo --preserve-env docker volume inspect --format \"{{.Labels.moniker}}\" ${VOLUME})" == "\"${MONIKER}\"" ]
             then    
                 echo ${VOLUME}
-            fi &&
-            echo LOG B 4
+            fi
     done | head -n 1) &&
-<<<<<<< HEAD
-    if [ -z "${REGISTRY_VOLUME}" ]
-    then
-        REGISTRY_VOLUME=$(sudo docker volume create --label moniker=${MONIKER} --label expiry=$(($(date +%s)+60*60*24*7)))
-=======
     if [ -z "${IMAGE_VOLUME}" ]
     then
         echo CREATING A NEW DOCKER VOLUME &&
             IMAGE_VOLUME=$(sudo docker volume create --label moniker=${MONIKER} --label expiry=$(($(date +%s)+60*60*24*7)))
     else
         echo USING A CACHED DOCKER VOLUME
->>>>>>> only cache images
     fi &&
     sudo --preserve-env docker create --cidfile registry --volume ${REGISTRY_VOLUME}:/var/lib/registry registry:2.6.2 &&
     sudo \
@@ -198,11 +186,7 @@ MONIKER=d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a &&
         --cidfile docker \
         --privileged \
         --volume /:/srv/host:ro \
-<<<<<<< HEAD
-        --volume ${REGISTRY_VOLUME}:/var/lib/docker \
-=======
         --volume ${IMAGE_VOLUME}:/var/lib/docker/image \
->>>>>>> only cache images
         --label expiry=$(($(date +%s)+60*60*24*7)) \
         docker:${DOCKER_SEMVER}-ce-dind \
             --host tcp://0.0.0.0:2376 &&
