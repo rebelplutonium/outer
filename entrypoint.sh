@@ -144,25 +144,26 @@ MONIKER=d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a &&
     cleanup(){
         sudo --preserve-env docker stop $(cat registry) $(cat docker) $(cat middle) &&
             sudo --preserve-env docker rm -fv $(cat registry) $(cat docker) $(cat middle) &&
-            sudo --preserve-env docker ps --quiet --all --filter label=expiry | while read ID
-            do
-                if [ $(sudo --preserve-env docker inspect --format "{{ .Config.Labels.expiry }}" ${ID}) -lt $(date +%s) ]
-                then
-                    sudo --preserve-env docker rm -v ${ID}
-                fi
-            done &&
-            sudo --preserve-env docker volume ls --quiet | while read VOLUME
-            do
-                if [ "$(sudo --preserve-env docker volume inspect --format \"{{.Labels.expiry}}\" ${VOLUME})" != "\"<no value>\"" ] && [ $(sudo --preserve-env docker volume inspect --format "{{.Labels.expiry}}" ${VOLUME}) -lt $(date +%s) ]
-                then
-                    sudo --preserve-env docker volume rm ${VOLUME}
-                fi
-            done
+            # sudo --preserve-env docker ps --quiet --all --filter label=expiry | while read ID
+            # do
+            #     if [ $(sudo --preserve-env docker inspect --format "{{ .Config.Labels.expiry }}" ${ID}) -lt $(date +%s) ]
+            #     then
+            #         sudo --preserve-env docker rm -v ${ID}
+            #     fi
+            # done &&
+            # sudo --preserve-env docker volume ls --quiet | while read VOLUME
+            # do
+            #     if [ "$(sudo --preserve-env docker volume inspect --format \"{{.Labels.expiry}}\" ${VOLUME})" != "\"<no value>\"" ] && [ $(sudo --preserve-env docker volume inspect --format "{{.Labels.expiry}}" ${VOLUME}) -lt $(date +%s) ]
+            #     then
+            #         sudo --preserve-env docker volume rm ${VOLUME}
+            #     fi
+            # done
+            true
     } &&
     trap cleanup EXIT &&
     IMAGE_VOLUME=$(sudo --preserve-env docker volume ls --quiet | while read VOLUME
     do
-            if [ "$(sudo --preserve-env docker volume inspect --format \" {{ .Labels.moniker }} \" ${VOLUME}-image)" == "\"${MONIKER}\"" ]
+            if [ "$(sudo --preserve-env docker volume inspect --format \"{{ .Labels.moniker }}\" ${VOLUME}-image)" == "\"${MONIKER}\"" ]
             then    
                 echo ${VOLUME}
             fi
@@ -173,7 +174,7 @@ MONIKER=d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a &&
     fi &&
     REGISTRY_VOLUME=$(sudo --preserve-env docker volume ls --quiet | while read VOLUME
     do
-            if [ "$(sudo --preserve-env docker volume inspect --format \" {{ .Labels.moniker }} \" ${VOLUME}-registry)" == "\"${MONIKER}\"" ]
+            if [ "$(sudo --preserve-env docker volume inspect --format \"{{ .Labels.moniker }}\" ${VOLUME}-registry)" == "\"${MONIKER}\"" ]
             then    
                 echo ${VOLUME}
             fi
