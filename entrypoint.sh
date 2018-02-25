@@ -178,7 +178,7 @@ MONIKER=d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a &&
     else
         echo USING A CACHED DOCKER VOLUME
     fi &&
-    sudo --preserve-env docker create --cidfile registry --volume ${REGISTRY_VOLUME}:/var/lib/registry registry:2.6.2 &&
+    # sudo --preserve-env docker create --cidfile registry --volume ${REGISTRY_VOLUME}:/var/lib/registry registry:2.6.2 &&
     sudo \
         --preserve-env \
         docker \
@@ -190,22 +190,22 @@ MONIKER=d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a &&
         --label expiry=$(($(date +%s)+60*60*24*7)) \
         docker:${DOCKER_SEMVER}-ce-dind \
             --host tcp://0.0.0.0:2376 &&
-    sudo --preserve-env docker start $(cat docker) $(cat registry) &&
-    sleep 5s &&
+    # sudo --preserve-env docker start $(cat docker) $(cat registry) &&
+    # sleep 5s &&
     sudo --preserve-env docker exec --interactive $(cat docker) adduser -D user &&
     sudo --preserve-env docker exec --interactive $(cat docker) mkdir /home/user/workspace &&
     sudo --preserve-env docker exec --interactive $(cat docker) chown user:user /home/user/workspace &&
-    echo LOG A 5 &&
-    sudo --preserve-env docker inspect --format "{{.NetworkSettings.Networks.bridge.IPAddress}}" | sudo --preserve-env docker exec --interactive $(cat docker) tee -a /etc/hosts &&
-    echo LOG B 5 &&
-    (cat > ${TFILE} <<EOF
-{
-    "insecure-registries": ["registry:5000"]
-}
-EOF
-    ) | sudo --preserve-env docker exec --interactive $(cat docker) tee /etc/docker/daemon.json &&
-    sudo --preserve-env docker restart $(cat docker) $(cat registry) &&
-    sleep 5s &&
+#     echo LOG A 5 &&
+#     sudo --preserve-env docker inspect --format "{{.NetworkSettings.Networks.bridge.IPAddress}}" | sudo --preserve-env docker exec --interactive $(cat docker) tee -a /etc/hosts &&
+#     echo LOG B 5 &&
+#     (cat > ${TFILE} <<EOF
+# {
+#     "insecure-registries": ["registry:5000"]
+# }
+# EOF
+#     ) | sudo --preserve-env docker exec --interactive $(cat docker) tee /etc/docker/daemon.json &&
+#     sudo --preserve-env docker restart $(cat docker) $(cat registry) &&
+#     sleep 5s &&
     echo LOG A 6 &&
     sudo \
         --preserve-env \
