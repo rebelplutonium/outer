@@ -200,8 +200,8 @@ MONIKER=d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a &&
         --label expiry=$(($(date +%s)+60*60*24*7)) \
         rebelplutonium/middle:${MIDDLE_SEMVER} \
             "${@}" &&
-    sudo --preserve-env docker exec --interactive $(cat docker) ps --all --quiet | while read CONTAINER
+    sudo --preserve-env docker exec --interactive $(cat docker) docker ps --all --quiet | while read CONTAINER
     do
-        sudo --preserve-env docker exec --interactive $(cat docker) rm --force --volumes ${CONTAINER}
+        sudo --preserve-env docker exec --interactive $(cat docker) docker srm --force --volumes ${CONTAINER}
     done &&
     sudo --preserve-env docker start --interactive $(cat middle)
