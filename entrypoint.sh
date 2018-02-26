@@ -202,6 +202,6 @@ MONIKER=d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a &&
             "${@}" &&
     sudo --preserve-env docker exec --interactive $(cat docker) docker ps --all --quiet | while read CONTAINER
     do
-        sudo --preserve-env docker exec --interactive $(cat docker) docker srm --force --volumes ${CONTAINER}
+        sudo --preserve-env docker exec --interactive $(cat docker) docker rm --force --volumes ${CONTAINER}
     done &&
     sudo --preserve-env docker start --interactive $(cat middle)
