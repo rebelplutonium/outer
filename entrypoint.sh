@@ -68,6 +68,10 @@ MONIKER=d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a &&
                 export INNER_SEMVER="${2}" &&
                     shift 2
             ;;
+            --target-uid)
+                export TARGET_UID="${2}" &&
+                    shift 2
+            ;;
             *)
                 echo Unsupported Option &&
                     echo ${0} &&
@@ -141,6 +145,11 @@ MONIKER=d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a &&
         echo Unspecified MIDDLE_SEMVER &&
             exit 77
     fi &&
+    if [ -z "${TARGET_UID}" ]
+    then
+        echo Unspecified TARGET_UID &&
+            exit 78
+    fi &&
     cleanup(){
         sudo --preserve-env docker stop $(cat docker) $(cat middle) &&
             sudo --preserve-env docker rm -fv $(cat docker) $(cat middle)
@@ -166,6 +175,7 @@ MONIKER=d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a &&
         --privileged \
         --volume /:/srv/host:ro \
         --volume ${IMAGE_VOLUME}:/var/lib/docker \
+        --volume /run/user/${TARGET_UID}/pulse:/srv/pulse \
         --label expiry=$(($(date +%s)+60*60*24*7)) \
         docker:${DOCKER_SEMVER}-ce-dind \
             --host tcp://0.0.0.0:2376 &&
@@ -196,6 +206,7 @@ MONIKER=d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a &&
         --env BROWSER_SEMVER \
         --env MIDDLE_SEMVER \
         --env INNER_SEMVER \
+        --env TARGET_UID \
         --env DOCKER_HOST=$(sudo --preserve-env docker inspect --format "tcp://{{ .NetworkSettings.Networks.bridge.IPAddress }}:2376" $(cat docker)) \
         --label expiry=$(($(date +%s)+60*60*24*7)) \
         rebelplutonium/middle:${MIDDLE_SEMVER} \
