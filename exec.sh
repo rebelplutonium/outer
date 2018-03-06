@@ -32,6 +32,7 @@ do
                     --label expiry=$(($(date +%s)+60*60*24*7)) \
                     --volume /var/run/docker.sock:/var/run/docker.sock:ro \
                     --env DISPLAY \
+                    --env TARGET_UID=${UID} \
                     rebelplutonium/outer:${MAJOR}.${MINOR}.${PATCH} \
                         "${@}" &&
                 shift ${#}
