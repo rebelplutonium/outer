@@ -181,6 +181,7 @@ MONIKER=d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a &&
             --host tcp://0.0.0.0:2376 &&
     sudo --preserve-env docker start $(cat docker) &&
     sudo --preserve-env docker exec --interactive $(cat docker) adduser -D user -u ${TARGET_UID} -g ${TARGET_UID} &&
+    sudo --preserve-env docker exec --interactive $(cat docker) mkdir /opt &&
     sudo --preserve-env docker exec --interactive $(cat docker) mkdir /opt/cloud9 &&
     sudo --preserve-env docker exec --interactive $(cat docker) mkdir /opt/cloud9/workspace &&
     sudo --preserve-env docker exec --interactive $(cat docker) chown user:user /opt/cloud9/workspace &&
