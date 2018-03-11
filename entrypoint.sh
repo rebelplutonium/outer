@@ -180,7 +180,7 @@ MONIKER=d1523b1c-85a1-40fb-8b55-6bf6d9ae0a0a &&
         docker:${DOCKER_SEMVER}-ce-dind \
             --host tcp://0.0.0.0:2376 &&
     sudo --preserve-env docker start $(cat docker) &&
-    sudo --preserve-env docker exec --interactive $(cat docker) adduser -D user &&
+    sudo --preserve-env docker exec --interactive $(cat docker) adduser -D user -u ${TARGET_UID} -g ${TARGET_UID} &&
     sudo --preserve-env docker exec --interactive $(cat docker) mkdir /home/user/workspace &&
     sudo --preserve-env docker exec --interactive $(cat docker) chown user:user /home/user/workspace &&
     sudo \
