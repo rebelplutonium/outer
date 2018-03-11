@@ -1,4 +1,5 @@
 .dockerignore
 .gitignore
 exec-*.sh
+template
 README.md
