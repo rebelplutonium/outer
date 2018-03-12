@@ -110,7 +110,7 @@ cleanup(){
     sudo /usr/local/bin/docker exec --interactive $(cat docker) mkdir /opt &&
     sudo /usr/local/bin/docker exec --interactive $(cat docker) mkdir /opt/cloud9 &&
     sudo /usr/local/bin/docker exec --interactive $(cat docker) mkdir /opt/cloud9/workspace &&
-    sudo docker exec --interactive $(cat docker) chown $(stat -c %u /srv/working) /opt/cloud9/workspace &&
+    sudo /usr/local/bin/docker exec --interactive $(cat docker) chown $(stat -c %u /srv/working) /opt/cloud9/workspace &&
     sudo \
         --preserve-env \
         /usr/local/bin/docker \
