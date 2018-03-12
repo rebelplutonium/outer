@@ -1,15 +1,15 @@
 #!/bin/sh
 
 cleanup(){
-    sudo docker stop $(cat docker) $(cat middle) &&
-        sudo docker rm -fv $(cat docker) $(cat middle) &&
+    sudo /usr/local/bin/docker stop $(cat docker) $(cat middle) &&
+        sudo /usr/local/bin/docker rm -fv $(cat docker) $(cat middle) &&
         if [ ! -z "${MONIKER}" ]
         then
-            sudo docker volume ls --quiet --filter label=moniker=${MONIKER} --filter label=expiry | while read VOLUME
+            sudo /usr/local/bin/docker volume ls --quiet --filter label=moniker=${MONIKER} --filter label=expiry | while read VOLUME
             do
-                if [ $(sudo docker volume inspect --format "{{.Labels.expiry}}" ${VOLUME}) -lt $(date %s) ]
+                if [ $(sudo /usr/local/bin/docker volume inspect --format "{{.Labels.expiry}}" ${VOLUME}) -lt $(date +%s) ]
                 then
-                    sudo docker volume rm ${VOLUME}
+                    sudo /usr/local/bin/docker volume rm ${VOLUME}
                 fi
             done
         fi
@@ -91,25 +91,25 @@ cleanup(){
         echo Unspecified TARGET_UID &&
             exit 78
     fi &&
-    IMAGE_VOLUME=$(sudo --preserve-env docker volume ls --quiet --filter label=moniker=${MONIKER} | head -n 1) &&
+    IMAGE_VOLUME=$(sudo /usr/local/bin/docker volume ls --quiet --filter label=moniker=${MONIKER} | head -n 1) &&
     if [ -z "${IMAGE_VOLUME}" ]
     then
-        IMAGE_VOLUME=$(sudo docker volume create --label moniker=${MONIKER} --label expiry=$(date --date "now + 1 month" %s))
+        IMAGE_VOLUME=$(sudo /usr/local/bin/docker volume create --label moniker=${MONIKER} --label expiry=$(date --date "now + 1 month" %s))
     fi &&
     sudo \
-        docker \
+        /usr/local/bin/docker \
         create \
         --cidfile docker \
         --privileged \
-        --volume /:/srv/host:ro \
-        --volume ${IMAGE_VOLUME}:/var/lib/docker \
+        --mount type=bind,source=/,destination=/srv/host,readonly=true \
+        --mount type=volume,source=${IMAGE_VOLUME},destination=/var/lib/docker,readonly=false \
         --label expiry=$(date --date "now + 1 month" +%s) \
         docker:${DOCKER_SEMVER}-ce-dind \
             --host tcp://0.0.0.0:2376 &&
-    sudo docker start $(cat docker) &&
-    sudo docker exec --interactive $(cat docker) mkdir /opt &&
-    sudo docker exec --interactive $(cat docker) mkdir /opt/cloud9 &&
-    sudo docker exec --interactive $(cat docker) mkdir /opt/cloud9/workspace &&
+    sudo /usr/local/bin/docker start $(cat docker) &&
+    sudo /usr/local/bin/docker exec --interactive $(cat docker) mkdir /opt &&
+    sudo /usr/local/bin/docker exec --interactive $(cat docker) mkdir /opt/cloud9 &&
+    sudo /usr/local/bin/docker exec --interactive $(cat docker) mkdir /opt/cloud9/workspace &&
     sudo docker exec --interactive $(cat docker) chown $(stat -c %u /srv/working) /opt/cloud9/workspace &&
     sudo \
         --preserve-env \
