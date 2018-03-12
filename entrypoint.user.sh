@@ -94,7 +94,7 @@ cleanup(){
     IMAGE_VOLUME=$(sudo /usr/local/bin/docker volume ls --quiet --filter label=moniker=${MONIKER} | head -n 1) &&
     if [ -z "${IMAGE_VOLUME}" ]
     then
-        IMAGE_VOLUME=$(sudo /usr/local/bin/docker volume create --label moniker=${MONIKER} --label expiry=$(date --date "now + 1 month" %s))
+        IMAGE_VOLUME=$(sudo /usr/local/bin/docker volume create --label moniker=${MONIKER} --label expiry=$(date --date "now + 1 month" +%s))
     fi &&
     sudo \
         /usr/local/bin/docker \
@@ -113,7 +113,7 @@ cleanup(){
     sudo docker exec --interactive $(cat docker) chown $(stat -c %u /srv/working) /opt/cloud9/workspace &&
     sudo \
         --preserve-env \
-        docker \
+        /usr/local/bin/docker \
         create \
         --cidfile middle \
         --interactive \
@@ -139,4 +139,4 @@ cleanup(){
         --label expiry=$(date --date "now + 1 month" +%s) \
         rebelplutonium/middle:${MIDDLE_SEMVER} \
             "${@}" &&
-    sudo --preserve-env docker start --interactive $(cat middle)
+    sudo /usr/local/bin/docker start --interactive $(cat middle)
