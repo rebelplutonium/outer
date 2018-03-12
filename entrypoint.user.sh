@@ -135,7 +135,7 @@ cleanup(){
         --env MIDDLE_SEMVER \
         --env INNER_SEMVER \
         --env TARGET_UID \
-        --env DOCKER_HOST=$(sudo --preserve-env docker inspect --format "tcp://{{ .NetworkSettings.Networks.bridge.IPAddress }}:2376" $(cat docker)) \
+        --env DOCKER_HOST=$(sudo /usr/local/bin/docker inspect --format "tcp://{{ .NetworkSettings.Networks.bridge.IPAddress }}:2376" $(cat docker)) \
         --label expiry=$(date --date "now + 1 month" +%s) \
         rebelplutonium/middle:${MIDDLE_SEMVER} \
             "${@}" &&
