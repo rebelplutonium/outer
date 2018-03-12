@@ -91,6 +91,11 @@ cleanup(){
         echo Unspecified TARGET_UID &&
             exit 78
     fi &&
+    if [ "${TARGET_UID}" != 1000 ]
+    then
+        echo TARGET_UID must be 1000 &&
+            exit 79
+    fi
     IMAGE_VOLUME=$(sudo /usr/local/bin/docker volume ls --quiet --filter label=moniker=${MONIKER} | head -n 1) &&
     if [ -z "${IMAGE_VOLUME}" ]
     then
@@ -102,6 +107,11 @@ cleanup(){
         --cidfile docker \
         --privileged \
         --mount type=bind,source=/,destination=/srv/host,readonly=true \
+        --mount type=bind,destination=/srv/pulse,source=/run/user/${TARGET_UID}/pulse,readonly=false \
+        --mount type=bind,destination=/srv/machine-id,source=/etc/machine-id,readonly=false \
+        --mount type=bind,destination=/srv/system_bus_socket,source=/var/run/dbus/system_bus_socket,readonly=false \
+        --mount type=bind,destination=/srv/dbus,source=/var/lib/dbus,readonly=false \
+        --mount type=bind,destination=/srv/tmp,source=/tmp,readonly=false \
         --mount type=volume,source=${IMAGE_VOLUME},destination=/var/lib/docker,readonly=false \
         --label expiry=$(date --date "now + 1 month" +%s) \
         docker:${DOCKER_SEMVER}-ce-dind \
