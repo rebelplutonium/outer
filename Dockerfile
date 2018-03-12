@@ -6,6 +6,6 @@ RUN \
         echo "user ALL=(ALL) NOPASSWD:SETENV: /usr/local/bin/docker" > /etc/sudoers.d/user && \
         chmod 0444 /etc/sudoers.d/user && \
         rm -rf /var/cache/apk/*
-COPY entrypoint.root.sh entrypoint.user /opt/scripts/
+COPY entrypoint.root.sh entrypoint.user.sh /opt/scripts/
 ENTRYPOINT ["sh", "/opt/scripts/entrypoint.root.sh"]
 CMD []
