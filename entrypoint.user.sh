@@ -112,6 +112,7 @@ cleanup(){
         --mount type=bind,destination=/srv/system_bus_socket,source=/var/run/dbus/system_bus_socket,readonly=false \
         --mount type=bind,destination=/srv/dbus,source=/var/lib/dbus,readonly=false \
         --mount type=bind,destination=/srv/tmp,source=/tmp,readonly=false \
+        --mount type=bind,destination=/srv/working,source=/srv/working,readonly=false \
         --mount type=volume,source=${IMAGE_VOLUME},destination=/var/lib/docker,readonly=false \
         --label expiry=$(date --date "now + 1 month" +%s) \
         docker:${DOCKER_SEMVER}-ce-dind \
